@@ -1,0 +1,14 @@
+{
+    email {$CADDY_EMAIL}
+}
+
+{$DOMAIN} {
+    reverse_proxy bot:8080
+    
+    # Optional: Serve static files directly if needed, 
+    # but the bot API already serves /game/ as static
+    
+    log {
+        output file /var/log/caddy/access.log
+    }
+}

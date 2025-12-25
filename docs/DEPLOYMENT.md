@@ -28,25 +28,11 @@ sudo apt update && sudo apt install -y docker.io docker-compose git nginx python
    make compose-up
    ```
 
-## 4. HTTPS (Nginx & SSL)
-Telegram **requires** HTTPS for webhooks.
-1. **Configure Nginx**:
-   Create `/etc/nginx/sites-available/bot`:
-   ```nginx
-   server {
-       server_name your-domain.com;
-       location / {
-           proxy_pass http://localhost:8080;
-           proxy_set_header Host $host;
-           proxy_set_header X-Real-IP $remote_addr;
-       }
-   }
-   ```
-2. **Enable & SSL**:
-   ```bash
-   sudo ln -s /etc/nginx/sites-available/bot /etc/nginx/sites-enabled/
-   sudo certbot --nginx -d your-domain.com
-   ```
+## 4. HTTPS & Automatic SSL (Caddy)
+The bot now uses **Caddy** to automatically handle SSL certificates from Let's Encrypt.
+1. **Configure .env**: Ensure `DOMAIN` and `CADDY_EMAIL` are set.
+2. **DNS**: Point your domain's A record to the AWS EC2 IP.
+3. **Run**: Caddy is part of the `docker-compose.yml`. It will automatically provision an SSL certificate for your domain on first run.
 
 ## 📈 Monitoring & Metrics
 
