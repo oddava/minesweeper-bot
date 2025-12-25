@@ -35,6 +35,7 @@ class WebhookSettings(EnvBaseSettings):
 
 class BotSettings(WebhookSettings):
     BOT_TOKEN: str
+    SUPERADMIN_ID: int = 0
     SUPPORT_URL: str | None = None
     RATE_LIMIT: int | float = 0.5  # for throttling control
 

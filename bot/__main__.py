@@ -9,7 +9,6 @@ from sentry_sdk.integrations.loguru import LoggingLevels, LoguruIntegration
 from bot.core.config import settings
 from bot.core.loader import app, bot, dp
 from bot.handlers import get_handlers_router
-from bot.handlers.metrics import MetricsView
 from bot.keyboards.default_commands import remove_default_commands, set_default_commands
 from bot.middlewares import register_middlewares
 from bot.middlewares.prometheus import prometheus_middleware_factory
@@ -24,7 +23,7 @@ async def on_startup() -> None:
 
     if settings.USE_WEBHOOK:
         app.middlewares.append(prometheus_middleware_factory())
-        app.router.add_route("GET", "/metrics", MetricsView)
+
 
     await set_default_commands(bot)
 
@@ -112,11 +111,52 @@ async def main() -> None:
     dp.startup.register(on_startup)
     dp.shutdown.register(on_shutdown)
 
+    # Use Uvicorn to run the FastAPI app
+    import uvicorn
+    from bot.api.main import app as fastapi_app
+
+    config = uvicorn.Config(
+        app=fastapi_app,
+        host=settings.WEBHOOK_HOST,
+        port=settings.WEBHOOK_PORT,
+        log_level="info"
+    )
+    server = uvicorn.Server(config)
+
     if settings.USE_WEBHOOK:
-        await setup_webhook()
+        # In webhook mode, Uvicorn handles the server
+        # We need to ensure webhook is set during startup
+        @fastapi_app.on_event("startup")
+        async def on_fastapi_startup():
+            await bot.set_webhook(
+                settings.webhook_url,
+                allowed_updates=dp.resolve_used_update_types(),
+                secret_token=settings.WEBHOOK_SECRET,
+            )
+        
+        await server.serve()
     else:
-        await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
+        # In polling mode, we run polling AND the server (for Web App)
+        # We run them concurrently
+        await bot.delete_webhook(drop_pending_updates=True)
+        
+        # Run polling + server
+        # We need to run server in a way that doesn't block polling
+        # Since uvicorn.Server.serve() is a blocking loop, we task it.
+        params = {"allowed_updates": dp.resolve_used_update_types()}
+        
+        # Start the API server in bg
+        asyncio.create_task(server.serve())
+        
+        await dp.start_polling(bot, **params)
 
 
 if __name__ == "__main__":
-    uvloop.run(main())
+    try:
+        if asyncio.get_event_loop().is_running():
+            asyncio.create_task(main())
+        else:
+            uvloop.run(main()) # uvloop for linux
+    except RuntimeError:
+        # Fallback for systems where uvloop might conflict or other loop issues
+        asyncio.run(main())

@@ -8,25 +8,14 @@ if TYPE_CHECKING:
 
 users_commands: dict[str, dict[str, str]] = {
     "en": {
-        "help": "help",
-        "contacts": "developer contact details",
-        "menu": "main menu with earning schemes",
-        "settings": "setting information about you",
-        "supports": "support contacts",
-    },
-    "uk": {
-        "help": "help",
-        "contacts": "developer contact details",
-        "menu": "main menu with earning schemes",
-        "settings": "setting information about you",
-        "supports": "support contacts",
+        "play": "🎮 Play Minesweeper",
+        "profile": "📊 View your stats",
+        "leaderboard": "🏆 Top players",
     },
     "ru": {
-        "help": "help",
-        "contacts": "developer contact details",
-        "menu": "main menu with earning schemes",
-        "settings": "setting information about you",
-        "supports": "support contacts",
+        "play": "🎮 Играть в Сапёр",
+        "profile": "📊 Ваша статистика",
+        "leaderboard": "🏆 Лучшие игроки",
     },
 }
 

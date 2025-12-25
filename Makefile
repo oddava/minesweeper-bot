@@ -89,16 +89,16 @@ restore:
 
 # I18N
 babel-extract: ## Extracts translatable strings from the source code into a .pot file
-	@uv run pybabel extract --input-dirs=. -o $(LOCALES)/messages.pot
-.PHONY: locales-extract
+	docker compose exec bot uv run pybabel extract --input-dirs=. -o $(LOCALES)/messages.pot
+.PHONY: babel-extract
 
 babel-update: ## Updates .pot files by merging changed strings into the existing .pot files
-	@uv run pybabel update -d $(LOCALES) -i $(LOCALES)/messages.pot
-.PHONY: locales-update
+	docker compose exec bot uv run pybabel update -d $(LOCALES) -i $(LOCALES)/messages.pot
+.PHONY: babel-update
 
 babel-compile: ## Compiles translation .po files into binary .mo files
-	@uv run pybabel compile -d $(LOCALES)
-.PHONY: locales-compile
+	docker compose exec bot uv run pybabel compile -d $(LOCALES)
+.PHONY: babel-compile
 
 babel: extract update
 .PHONY: babel
