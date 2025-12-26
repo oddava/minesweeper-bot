@@ -75,17 +75,17 @@ clean: ## Delete all temporary and generated files
 .PHONY: clean
 
 # BACKUPS
-backup:
-	docker compose exec bot scripts/postgres/backup
-.PHONY: backup
+list-backups: ## List all available backups
+	docker compose exec pgbackup ls -lh /backups
 
-mount-docker-backup:
-	docker cp app_db:/backups/$(args) ./$(args)
-.PHONY: mount-docker-backup
+backup: ## Trigger a manual backup
+	docker compose exec pgbackup /usr/local/bin/backup
 
-restore:
-	docker compose exec app_db scripts/postgres/restore $(args)
-.PHONY: restore
+copy-backup: ## Copy a backup from container to host (args=filename)
+	docker cp $$(docker compose ps -q pgbackup):/backups/$(args) ./$(args)
+
+restore: ## Restore from a backup file (args=filename)
+	docker compose exec pgbackup /usr/local/bin/restore $(args)
 
 # I18N
 babel-extract: ## Extracts translatable strings from the source code into a .pot file
