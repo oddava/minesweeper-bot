@@ -76,7 +76,7 @@ clean: ## Delete all temporary and generated files
 
 # BACKUPS
 list-backups: ## List all available backups
-	docker compose exec pgbackup ls -lh /backups
+	docker compose exec pgbackup find /backups -type f -name "*.dump.gz"
 
 backup: ## Trigger a manual backup
 	docker compose exec pgbackup /backup.sh
