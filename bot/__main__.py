@@ -103,17 +103,24 @@ async def main() -> None:
 
         # In webhook mode, Uvicorn handles the server
         # We need to ensure webhook is set
-        try:
-            await bot.set_webhook(
-                settings.webhook_url,
-                allowed_updates=dp.resolve_used_update_types(),
-                secret_token=settings.WEBHOOK_SECRET,
-                request_timeout=30,
-                drop_pending_updates=True
-            )
-            logger.info(f"Webhook set successfully to {settings.webhook_url}")
-        except Exception as e:
-            logger.exception(f"Failed to set webhook: {e}")
+        max_retries = 5
+        for i in range(max_retries):
+            try:
+                await bot.set_webhook(
+                    settings.webhook_url,
+                    allowed_updates=dp.resolve_used_update_types(),
+                    secret_token=settings.WEBHOOK_SECRET,
+                    request_timeout=30,
+                    drop_pending_updates=True
+                )
+                logger.info(f"Webhook set successfully to {settings.webhook_url}")
+                break
+            except Exception as e:
+                if i < max_retries - 1:
+                    logger.warning(f"Failed to set webhook (attempt {i+1}/{max_retries}): {e}. Retrying in 5s...")
+                    await asyncio.sleep(5)
+                else:
+                    logger.exception(f"Failed to set webhook after {max_retries} attempts: {e}")
 
         await server.serve()
         
@@ -137,10 +144,7 @@ async def main() -> None:
 
 if __name__ == "__main__":
     try:
-        if asyncio.get_event_loop().is_running():
-            asyncio.create_task(main())
-        else:
-            uvloop.run(main()) # uvloop for linux
-    except RuntimeError:
-        # Fallback for systems where uvloop might conflict or other loop issues
+        import uvloop
+        uvloop.run(main())
+    except (ImportError, RuntimeError):
         asyncio.run(main())
