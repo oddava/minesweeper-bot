@@ -1,4 +1,4 @@
-from aiogram import Router, types, F
+from aiogram import Router, types, F, exceptions
 from aiogram.filters import Command
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from sqlalchemy import select, func, desc
@@ -63,6 +63,10 @@ async def refresh_leaderboard_callback(callback: types.CallbackQuery):
         await callback.answer("No data yet!")
         return
     
-    await callback.message.edit_text(text, parse_mode="HTML", reply_markup=get_refresh_keyboard())
+    try:
+        await callback.message.edit_text(text, parse_mode="HTML", reply_markup=get_refresh_keyboard())
+    except exceptions.TelegramBadRequest as e:
+        if "message is not modified" not in e.message:
+            raise e
     await callback.answer("Refreshed! ✅")
 
