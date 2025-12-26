@@ -19,7 +19,6 @@ services:
   bot:
     build:
       context: .
-      network_mode: "host"
       dockerfile: ./Dockerfile
     image: bot:latest
     container_name: ${COMPOSE_PROJECT_NAME}-bot
