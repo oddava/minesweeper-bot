@@ -2,8 +2,8 @@
     email {$CADDY_EMAIL}
 }
 
-minesweeper-bot.duckdns.org {
-    reverse_proxy tgbot-bot:8080
+{$DOMAIN} {
+    reverse_proxy {$COMPOSE_PROJECT_NAME}-bot:{$WEBHOOK_PORT}
 
     log {
         output file /var/log/caddy/access.log
