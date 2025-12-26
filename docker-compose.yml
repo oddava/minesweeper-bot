@@ -25,8 +25,8 @@ services:
     restart: always
     env_file:
       - .env
-    # ports:
-    #   - ${WEBHOOK_PORT}:${WEBHOOK_PORT}
+    ports:
+      - ${WEBHOOK_PORT}:${WEBHOOK_PORT}
     networks:
       - app
       - monitoring
