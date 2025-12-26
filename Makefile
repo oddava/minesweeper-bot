@@ -84,8 +84,8 @@ backup: ## Trigger a manual backup
 copy-backup: ## Copy a backup from container to host (args=filename)
 	docker cp $$(docker compose ps -q pgbackup):/backups/$(args) ./$(args)
 
-restore: ## Restore from a backup file (args=filename)
-	docker compose exec pgbackup /restore.sh $(args)
+restore: ## Restore from a backup file (args=full_path_to_file)
+	docker compose exec pgbackup sh -c "PGPASSWORD=\$$POSTGRES_PASSWORD zcat $(args) | psql -h \$$POSTGRES_HOST -U \$$POSTGRES_USER -d \$$POSTGRES_DB"
 
 # I18N
 babel-extract: ## Extracts translatable strings from the source code into a .pot file
