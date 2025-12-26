@@ -10,3 +10,12 @@ minesweeper-bot.duckdns.org {
         format json
     }
 }
+
+grafana.minesweeper-bot.duckdns.org {
+    reverse_proxy grafana:3000
+
+    log {
+        output file /var/log/caddy/access.log
+        format json
+    }
+}
