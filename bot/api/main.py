@@ -1,3 +1,4 @@
+from fastapi import FastAPI, Request
 from fastapi.responses import Response, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from aiogram.types import Update
