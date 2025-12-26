@@ -25,6 +25,7 @@ class WebhookSettings(EnvBaseSettings):
     WEBHOOK_SECRET: str = ""
     WEBHOOK_HOST: str = "localhost"
     WEBHOOK_PORT: int = 8080
+    WEBHOOK_IP: str | None = None
 
     @property
     def webhook_url(self) -> str:

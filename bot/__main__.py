@@ -108,6 +108,7 @@ async def main() -> None:
             try:
                 await bot.set_webhook(
                     settings.webhook_url,
+                    ip_address=settings.WEBHOOK_IP,
                     allowed_updates=dp.resolve_used_update_types(),
                     secret_token=settings.WEBHOOK_SECRET,
                     request_timeout=30,
