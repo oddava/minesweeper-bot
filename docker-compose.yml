@@ -35,6 +35,9 @@ services:
       - redis
     volumes:
       - ./migrations:/usr/src/app/migrations
+    dns:
+      - 8.8.8.8 # Google DNS
+      - 1.1.1.1 # Cloudflare DNS
 
   # admin:
   #   build:
