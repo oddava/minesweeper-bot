@@ -5,27 +5,27 @@
 {$DOMAIN} {
     # Webhook path for Telegram
     handle /webhook* {
-        reverse_proxy bot:{$WEBHOOK_PORT}
+        reverse_proxy {$COMPOSE_PROJECT_NAME}-bot:{$WEBHOOK_PORT}
     }
 
     # API and Game endpoints
     handle /api* {
-        reverse_proxy bot:{$WEBHOOK_PORT}
+        reverse_proxy {$COMPOSE_PROJECT_NAME}-bot:{$WEBHOOK_PORT}
     }
 
     # Metrics
     handle /metrics* {
-        reverse_proxy bot:{$WEBHOOK_PORT}
+        reverse_proxy {$COMPOSE_PROJECT_NAME}-bot:{$WEBHOOK_PORT}
     }
 
     # Static game files (also served by FastAPI but mapped here for clarity)
     handle /game* {
-        reverse_proxy bot:{$WEBHOOK_PORT}
+        reverse_proxy {$COMPOSE_PROJECT_NAME}-bot:{$WEBHOOK_PORT}
     }
 
     # Default proxy
     handle {
-        reverse_proxy bot:{$WEBHOOK_PORT}
+        reverse_proxy {$COMPOSE_PROJECT_NAME}-bot:{$WEBHOOK_PORT}
     }
 
     log {
