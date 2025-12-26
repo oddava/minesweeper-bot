@@ -60,32 +60,6 @@ async def on_shutdown() -> None:
     logger.info("bot stopped")
 
 
-async def setup_webhook() -> None:
-    from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application  # noqa: PLC0415
-    from aiohttp.web import AppRunner, TCPSite  # noqa: PLC0415
-
-    await bot.set_webhook(
-        settings.webhook_url,
-        allowed_updates=dp.resolve_used_update_types(),
-        secret_token=settings.WEBHOOK_SECRET,
-    )
-
-    webhook_requests_handler = SimpleRequestHandler(
-        dispatcher=dp,
-        bot=bot,
-        secret_token=settings.WEBHOOK_SECRET,
-    )
-    webhook_requests_handler.register(app, path=settings.WEBHOOK_PATH)
-    setup_application(app, dp, bot=bot)
-
-    runner = AppRunner(app)
-    await runner.setup()
-    site = TCPSite(runner, host=settings.WEBHOOK_HOST, port=settings.WEBHOOK_PORT)
-    await site.start()
-
-    await asyncio.Event().wait()
-
-
 async def main() -> None:
     if settings.SENTRY_DSN:
         sentry_loguru = LoguruIntegration(

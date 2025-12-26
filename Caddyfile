@@ -3,12 +3,33 @@
 }
 
 {$DOMAIN} {
-    reverse_proxy bot:8080
-    
-    # Optional: Serve static files directly if needed, 
-    # but the bot API already serves /game/ as static
-    
+    # Webhook path for Telegram
+    handle /webhook* {
+        reverse_proxy bot:${WEBHOOK_PORT}
+    }
+
+    # API and Game endpoints
+    handle /api* {
+        reverse_proxy bot:${WEBHOOK_PORT}
+    }
+
+    # Metrics
+    handle /metrics* {
+        reverse_proxy bot:${WEBHOOK_PORT}
+    }
+
+    # Static game files (also served by FastAPI but mapped here for clarity)
+    handle /game* {
+        reverse_proxy bot:${WEBHOOK_PORT}
+    }
+
+    # Default proxy
+    handle {
+        reverse_proxy bot:${WEBHOOK_PORT}
+    }
+
     log {
         output file /var/log/caddy/access.log
+        format json
     }
 }
