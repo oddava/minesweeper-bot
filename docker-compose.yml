@@ -209,6 +209,7 @@ services:
       - prometheus
     networks:
       - monitoring
+      - caddy
     volumes:
       - ./configs/grafana/datasources:/etc/grafana/provisioning/datasources
       - ./configs/grafana/dashboards:/etc/grafana/provisioning/dashboards
@@ -220,6 +221,8 @@ networks:
   app:
     driver: bridge
   monitoring:
+    driver: bridge
+  caddy:
     driver: bridge
 
 volumes:
