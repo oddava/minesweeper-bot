@@ -1,5 +1,4 @@
-from fastapi import FastAPI, Request
-from fastapi.responses import Response
+from fastapi.responses import Response, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from aiogram.types import Update
 from bot.core.loader import dp, bot
@@ -10,6 +9,11 @@ from prometheus_client import generate_latest, CONTENT_TYPE_LATEST, Counter
 from collections import defaultdict
 
 app = FastAPI()
+
+@app.get("/")
+async def root_redirect():
+    """Redirect root to the game page."""
+    return RedirectResponse(url="/game")
 
 # Metrics
 GAMES_TOTAL = Counter('minesweeper_games_total', 'Total games played', ['mode', 'status'])
