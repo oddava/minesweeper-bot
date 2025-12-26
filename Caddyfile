@@ -3,7 +3,7 @@
 }
 
 minesweeper-bot.duckdns.org {
-    reverse_proxy tgbot-bot:443
+    reverse_proxy tgbot-bot:8080
 
     log {
         output file /var/log/caddy/access.log
