@@ -11,11 +11,13 @@ users_commands: dict[str, dict[str, str]] = {
         "play": "🎮 Play Minesweeper",
         "profile": "📊 View your stats",
         "leaderboard": "🏆 Top players",
+        "support": "🛠 Support",
     },
     "ru": {
         "play": "🎮 Играть в Сапёр",
         "profile": "📊 Ваша статистика",
         "leaderboard": "🏆 Лучшие игроки",
+        "support": "🛠 Поддержка",
     },
 }
 

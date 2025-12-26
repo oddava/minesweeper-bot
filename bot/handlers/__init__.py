@@ -1,6 +1,6 @@
 from aiogram import Router
 
-from . import start, web_app, profile, leaderboard, admin
+from . import start, web_app, profile, leaderboard, admin, support
 
 
 def get_handlers_router() -> Router:
@@ -10,5 +10,6 @@ def get_handlers_router() -> Router:
     router.include_router(profile.router)
     router.include_router(leaderboard.router)
     router.include_router(admin.router)
+    router.include_router(support.router)
 
     return router
