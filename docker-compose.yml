@@ -182,6 +182,7 @@ services:
       - pgbouncer
       - node-exporter
     networks:
+      - app
       - monitoring
     volumes:
       - ./configs/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
@@ -208,8 +209,8 @@ services:
     depends_on:
       - prometheus
     networks:
+      - app
       - monitoring
-      - caddy
     volumes:
       - ./configs/grafana/datasources:/etc/grafana/provisioning/datasources
       - ./configs/grafana/dashboards:/etc/grafana/provisioning/dashboards
@@ -221,8 +222,6 @@ networks:
   app:
     driver: bridge
   monitoring:
-    driver: bridge
-  caddy:
     driver: bridge
 
 volumes:
