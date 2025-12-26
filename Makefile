@@ -79,13 +79,13 @@ list-backups: ## List all available backups
 	docker compose exec pgbackup ls -lh /backups
 
 backup: ## Trigger a manual backup
-	docker compose exec pgbackup /usr/local/bin/backup
+	docker compose exec pgbackup /backup.sh
 
 copy-backup: ## Copy a backup from container to host (args=filename)
 	docker cp $$(docker compose ps -q pgbackup):/backups/$(args) ./$(args)
 
 restore: ## Restore from a backup file (args=filename)
-	docker compose exec pgbackup /usr/local/bin/restore $(args)
+	docker compose exec pgbackup /restore.sh $(args)
 
 # I18N
 babel-extract: ## Extracts translatable strings from the source code into a .pot file
