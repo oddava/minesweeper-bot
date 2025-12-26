@@ -98,23 +98,27 @@ async def main() -> None:
     server = uvicorn.Server(config)
 
     if settings.USE_WEBHOOK:
-        # In webhook mode, Uvicorn handles the server
-        # We need to ensure webhook is set during startup
-        @fastapi_app.on_event("startup")
-        async def on_fastapi_startup():
-            try:
-                await bot.set_webhook(
-                    settings.webhook_url,
-                    allowed_updates=dp.resolve_used_update_types(),
-                    secret_token=settings.WEBHOOK_SECRET,
-                    request_timeout=30,
-                )
-                logger.info("Webhook set successfully")
-            except Exception as e:
-                logger.exception(f"Failed to set webhook: {e}")
+        # Manually trigger startup logic for webhook mode
+        await on_startup()
 
-        
+        # In webhook mode, Uvicorn handles the server
+        # We need to ensure webhook is set
+        try:
+            await bot.set_webhook(
+                settings.webhook_url,
+                allowed_updates=dp.resolve_used_update_types(),
+                secret_token=settings.WEBHOOK_SECRET,
+                request_timeout=30,
+                drop_pending_updates=True
+            )
+            logger.info(f"Webhook set successfully to {settings.webhook_url}")
+        except Exception as e:
+            logger.exception(f"Failed to set webhook: {e}")
+
         await server.serve()
+        
+        # Shutdown logic
+        await on_shutdown()
     else:
         # In polling mode, we run polling AND the server (for Web App)
         # We run them concurrently

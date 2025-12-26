@@ -50,8 +50,17 @@ async def bot_webhook(request: Request):
     """
     Handle incoming Telegram updates (Webhooks)
     """
+    # 1. Secret token validation
+    if settings.WEBHOOK_SECRET:
+        secret_token = request.headers.get("X-Telegram-Bot-Api-Secret-Token")
+        if secret_token != settings.WEBHOOK_SECRET:
+            logging.warning("Unauthorized access attempt to webhook")
+            return Response(content="Unauthorized", status_code=401)
+
     try:
         data = await request.json()
+        logging.debug(f"Received webhook update: {data}")
+        
         update = Update.model_validate(data, context={"bot": bot})
         await dp.feed_update(bot, update)
         return {"status": "ok"}
