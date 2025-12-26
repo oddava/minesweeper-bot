@@ -37,6 +37,13 @@ async def metrics():
 async def health_check():
     return {"status": "ok", "version": "1.0.0"}
 
+@app.get("/uptimerobot")
+async def uptimerobot_check():
+    """
+    Specific route for UptimeRobot monitoring.
+    """
+    return {"status": "ok", "message": "Service is healthy"}
+
 # Mount the Web App static files
 # Checks if directory exists first to avoid startup errors during dev
 import os
