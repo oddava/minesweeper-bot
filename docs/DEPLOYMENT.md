@@ -24,7 +24,7 @@ sudo usermod -aG docker $USER
 
 ```bash
 # Clone repository
-git clone <your-repo-url>
+git clone https://github.com/oddava/minesweeper-bot.git
 cd minesweeper_bot
 
 # Configure environment
