@@ -1,79 +1,120 @@
+# 💣 oddava's minesweeper
 
-# 💣 Minesweeper Telegram Bot
+A feature-rich Minesweeper bot for Telegram with a WebApp frontend, multiple themes, and comprehensive admin tools.
 
-A feature-rich Minesweeper bot for Telegram with a Web App frontend, Anti-Cheat system, and comprehensive Admin Panel.
+**Version:** v1.4.0
 
 ## ✨ Features
 
-- **Web App Game**: Smooth Minesweeper built with Vanilla JS and Telegram Web Apps.
-- **Game Modes**: Beginner (9x9), Intermediate (16x16), Expert (16x30).
-- **Admin Panel**: Role-based access control (Superadmin/Admin).
-- **Anti-Cheat System**:
-  - Validates `Telegram.initData` signatures.
-  - Rejects impossible times (< 3 seconds).
-  - Flags suspicious activity (e.g. Expert wins < 30s).
-- **Analytics**: Prometheus metrics endpoint (`/metrics`) and custom game stats.
-- **Architecture**: Dockerized setup with PostgreSQL (Async), Redis, and PgBouncer.
+### 🎮 Game
+- **WebApp**: Smooth Minesweeper built with Vanilla JS and Telegram Web Apps
+- **3 Difficulty Modes**: Beginner (9×9), Intermediate (16×16), Expert (16×30)
+- **5 Themes**: Classic, Neon, Ocean, Retro, New Year Eve 🎆
+- **Settings**: Theme & vibration preferences persist across sessions
+- **Stats Tracking**: Best times, win count, game history
 
-## 🚀 Quick Setup
+### 🛡️ Security
+- **Anti-Cheat**: Validates `Telegram.initData` signatures
+- **Time Validation**: Rejects impossible times (<3s)
+- **Suspicious Activity Flagging**: Expert wins <30s get flagged
+- **Rate Limiting**: Built-in API protection
 
-### 1. Prerequisites
+### 📊 Admin & Monitoring
+- **Admin Panel**: Role-based access (Superadmin/Admin)
+- **Prometheus Metrics**: `/metrics` endpoint for monitoring
+- **Grafana Dashboards**: Pre-configured dashboards included
+- **Automated Backups**: PostgreSQL backups every 30 minutes
+
+## 🚀 Quick Start
+
+### Prerequisites
 - Docker & Docker Compose
-- A Telegram Bot Token (@BotFather)
-- An Ngrok account (for local development/webhooks)
+- Telegram Bot Token ([@BotFather](https://t.me/BotFather))
+- (Optional) Ngrok for local development
 
-### 2. Configuration
-Copy the example environment file:
+### Setup
+
 ```bash
+# Clone the repo
+git clone https://github.com/oddava/minesweeper-bot.git
+cd minesweeper_bot
+
+# Configure environment
 cp .env.example .env
+# Edit .env with your BOT_TOKEN and SUPERADMIN_ID
+
+# Start with Docker
+make compose-up
 ```
 
-Edit `.env` with your details:
-- `BOT_TOKEN`: Your Telegram bot token.
-- `SUPERADMIN_ID`: Your Telegram user ID (get it from @userinfobot).
-- `WEBHOOK_BASE_URL`: Your public HTTPS URL (e.g. Ngrok).
+For production deployment, see [Deployment Guide](docs/DEPLOYMENT.md).
 
-### 3. Run with Docker
-```bash
-docker compose up -d --build
-```
-
-### 4. Cloud Deployment (AWS/DigitalOcean)
-For production setup with Webhooks and SSL, see the [Deployment Guide](docs/DEPLOYMENT.md).
-
-### 5. Admin Setup
-Upon first run, if your `SUPERADMIN_ID` is set correctly in `.env`, you will automatically be recognized as a Superadmin.
-
-## 🔧 Commands
+## 🔧 Bot Commands
 
 | Command | Role | Description |
 |---------|------|-------------|
-| `/play` | User | Start a game |
+| `/play` | User | Launch the game |
 | `/profile` | User | View your stats |
-| `/leaderboard` | User | View top players |
-| `/admin` | Superadmin | Admin help menu |
-| `/admin add <id>` | Superadmin | Promote a user to Admin |
-| `/admin remove <id>` | Superadmin | Demote an Admin |
-| `/broadcast <msg>` | Superadmin | Send a message to all users |
-| `/config` | Superadmin | Debug current config |
-| `/stats` | Admin | View bot health & stats |
-| `/ban <id>` | Admin | Ban a cheater |
+| `/leaderboard` | User | Top players |
+| `/changelog` | User | What's new |
+| `/support` | User | Get help |
+| `/admin` | Superadmin | Admin commands |
+| `/admin add <id>` | Superadmin | Add an admin |
+| `/admin remove <id>` | Superadmin | Remove an admin |
+| `/broadcast <msg>` | Superadmin | Message all users |
+| `/stats` | Admin | Bot health & stats |
+| `/ban <id>` | Admin | Ban a user |
 | `/unban <id>` | Admin | Unban a user |
-| `/suspicious` | Admin | List flagged users |
+| `/suspicious` | Admin | View flagged users |
 
-## 🛡️ Security Checklists
+## 🛠️ Development
 
-- [x] **Secret Management**: Ensure `.env` is never committed (it is in `.gitignore`).
-- [x] **Web App VALIDATION**: The API verifies `initData` to prevent spoofing.
-- [x] **Rate Limiting**: Configured in API middleware.
-- [x] **Infrastructure**: Database ports should not be exposed globally in production.
+```bash
+# Install dependencies (requires uv)
+make deps
+
+# Run linters
+make check
+
+# Format code
+make format
+
+# Database migrations
+make migrate
+
+# View logs
+make logs
+```
 
 ## 🏗️ Tech Stack
 
-- **Backend**: Python 3.11, Aiogram 3.x, FastAPI (for Web App API & Webhooks).
-- **Database**: PostgreSQL 14 (Async SQLAlchemy), Redis (FSM & Caching).
-- **Frontend**: HTML5, CSS3, Vanilla JS.
-- **Monitoring**: Prometheus.
+| Layer | Technology |
+|-------|------------|
+| Bot Framework | Python 3.13, Aiogram 3.x |
+| API | FastAPI |
+| Database | PostgreSQL 14 (Async), PgBouncer |
+| Cache/FSM | Redis 7 |
+| WebApp | HTML5, CSS3, Vanilla JS |
+| Reverse Proxy | Caddy (auto SSL) |
+| Monitoring | Prometheus, Grafana |
+| Containers | Docker Compose |
+
+## 📁 Project Structure
+
+```
+minesweeper_bot/
+├── bot/
+│   ├── handlers/       # Command handlers
+│   ├── middlewares/    # Rate limiting, i18n
+│   ├── database/       # Models & repositories
+│   ├── web_app/        # Game frontend (HTML/CSS/JS)
+│   ├── api/            # FastAPI endpoints
+│   └── core/           # Config & settings
+├── configs/            # Prometheus, Grafana configs
+├── migrations/         # Alembic migrations
+├── docs/               # Documentation
+└── docker-compose.yml
+```
 
 ## 📝 License
 

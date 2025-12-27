@@ -1,55 +1,124 @@
-# 🚀 AWS Cloud Deployment Guide
+# 🚀 Deployment Guide
 
-This guide walks you through deploying the Minesweeper Bot to **AWS EC2** using Webhooks and a secure HTTPS setup.
+Deploy oddava's minesweeper bot to a cloud server (AWS, DigitalOcean, etc.) with automatic SSL.
 
-## 1. Prepare AWS Environment
-1. **Launch EC2 Instance**: Use Ubuntu 22.04 LTS (t3.micro is enough for start).
-2. **Security Group**:
-   - Allow **SSH (22)** from your IP.
-   - Allow **HTTP (80)** and **HTTPS (443)** from anywhere.
-   - (Optional) Allow **3000** (Grafana) and **9090** (Prometheus) if you want direct access (better to use SSH tunnel or Nginx proxy).
+## Prerequisites
 
-## 2. Server Setup
-Connect via SSH and install dependencies:
+- A VPS (Ubuntu 22.04 recommended, t3.micro works)
+- A domain name pointing to your server
+- Ports 80, 443 open in firewall
+
+## 1. Server Setup
+
 ```bash
-sudo apt update && sudo apt install -y docker.io docker-compose git nginx python3-certbot-nginx
+# SSH into your server
+ssh ubuntu@your-server-ip
+
+# Install Docker
+sudo apt update && sudo apt install -y docker.io docker-compose git
+sudo usermod -aG docker $USER
+# Log out and back in for group changes
 ```
 
-## 3. Deployment
-1. **Clone & Config**:
-   ```bash
-   git clone <your-repo-url>
-   cd minesweeper_bot
-   cp .env.example .env
-   # Edit .env: set USE_WEBHOOK=True, WEBHOOK_BASE_URL=https://your-domain.com
-   ```
-2. **Start Services**:
-   ```bash
-   make compose-up
-   ```
+## 2. Deploy the Bot
 
-## 4. HTTPS & Automatic SSL (Caddy)
-The bot now uses **Caddy** to automatically handle SSL certificates from Let's Encrypt.
-1. **Configure .env**: Ensure `DOMAIN` and `CADDY_EMAIL` are set.
-2. **DNS**: Point your domain's A record to the AWS EC2 IP.
-3. **Run**: Caddy is part of the `docker-compose.yml`. It will automatically provision an SSL certificate for your domain on first run.
+```bash
+# Clone repository
+git clone <your-repo-url>
+cd minesweeper_bot
 
-## 📈 Monitoring & Metrics
+# Configure environment
+cp .env.example .env
+nano .env
+```
 
-### 1. Accessing Prometheus
-- **Direct**: `http://your-server-ip:9090` (if port is open in Security Group).
-- **SSH Tunnel (Highly Recommended)**:
-  ```bash
-  ssh -L 9090:localhost:9090 ubuntu@your-server-ip
-  ```
-  Then visit `http://localhost:9090` on your machine.
+### Required `.env` settings:
 
-### 2. Accessing Grafana
-- **URL**: `http://your-server-ip:3000`
-- **Default Login**: Defined in `.env` (`GRAFANA_ADMIN_USER`/`GRAFANA_ADMIN_PASSWORD`).
-- **Dashboard**: We have pre-configured dashboards in `configs/grafana/dashboards`.
+```bash
+BOT_TOKEN="your-bot-token"
+SUPERADMIN_ID=your-telegram-id
+USE_WEBHOOK=True
+WEBHOOK_BASE_URL="https://your-domain.com"
+DOMAIN="your-domain.com"
+CADDY_EMAIL="your-email@example.com"
+DB_HOST="pgbouncer"
+```
 
-### 3. Minesweeper Metrics
-The bot exposes:
-- **`minesweeper_games_total`**: Counter of games played (labels: `mode`, `status`).
-- Standard Python & Process metrics.
+### Start services:
+
+```bash
+docker compose up -d --build
+```
+
+## 3. SSL (Automatic with Caddy)
+
+Caddy handles SSL automatically. Ensure:
+1. Your domain's A record points to the server IP
+2. Ports 80 and 443 are open
+3. `DOMAIN` and `CADDY_EMAIL` are set in `.env`
+
+Certificates are provisioned on first request.
+
+## 4. Verify Deployment
+
+```bash
+# Check all services are running
+docker compose ps
+
+# Check bot logs
+docker compose logs bot -f
+
+# Check webhook status
+curl https://your-domain.com/health
+```
+
+## 5. Monitoring
+
+### Prometheus
+Access via SSH tunnel (recommended):
+```bash
+ssh -L 9090:localhost:9090 ubuntu@your-server-ip
+# Then open http://localhost:9090
+```
+
+### Grafana
+- URL: `https://grafana.your-domain.com` (if configured in Caddyfile)
+- Or via SSH tunnel: `ssh -L 3000:localhost:3000 ubuntu@your-server-ip`
+- Default login: Check `GRAFANA_ADMIN_USER`/`GRAFANA_ADMIN_PASSWORD` in `.env`
+
+## 6. Maintenance
+
+### Updates
+```bash
+git pull
+docker compose up -d --build
+```
+
+### Backups
+```bash
+# List backups
+make list-backups
+
+# Manual backup
+make backup
+
+# Restore (replace filename)
+make restore args=/backups/daily/bot_db-20241227-120000.sql.gz
+```
+
+### Logs
+```bash
+# All services
+docker compose logs -f
+
+# Specific service
+docker compose logs bot -f
+```
+
+## Security Checklist
+
+- [ ] Change default passwords in `.env`
+- [ ] Don't expose DB ports (5432) publicly
+- [ ] Use SSH tunnel for Prometheus/Grafana
+- [ ] Keep Docker and OS updated
+- [ ] Enable UFW firewall (allow 22, 80, 443 only)
