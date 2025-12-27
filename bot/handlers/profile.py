@@ -23,7 +23,7 @@ async def profile_handler(message: types.Message):
         
         for mode in modes:
             # Count wins
-            wins_query = select(func.count()).where(
+            wins_query = select(func.count()).select_from(GameRecordModel).where(
                 GameRecordModel.user_id == user_id,
                 GameRecordModel.game_mode == mode,
                 GameRecordModel.is_win == True

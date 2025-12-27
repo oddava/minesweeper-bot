@@ -178,17 +178,17 @@ async def stats_handler(message: types.Message):
         
         # Wins
         wins_count = await session.scalar(
-            select(func.count()).where(GameRecordModel.is_win == True)
+            select(func.count()).select_from(GameRecordModel).where(GameRecordModel.is_win == True)
         )
         
         # Suspicious users
         suspicious_count = await session.scalar(
-            select(func.count()).where(UserModel.is_suspicious == True)
+            select(func.count()).select_from(UserModel).where(UserModel.is_suspicious == True)
         )
         
         # Blocked users
         blocked_count = await session.scalar(
-            select(func.count()).where(UserModel.is_block == True)
+            select(func.count()).select_from(UserModel).where(UserModel.is_block == True)
         )
     
     text = f"""
@@ -229,7 +229,7 @@ async def userstats_handler(message: types.Message):
         
         for mode in modes:
             wins = await session.scalar(
-                select(func.count()).where(
+                select(func.count()).select_from(GameRecordModel).where(
                     GameRecordModel.user_id == user_id,
                     GameRecordModel.game_mode == mode,
                     GameRecordModel.is_win == True
