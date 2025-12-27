@@ -2,7 +2,7 @@ from aiogram import Router, types
 from aiogram.filters import Command
 from aiogram.utils.i18n import gettext as _
 from aiogram.types import WebAppInfo, InlineKeyboardMarkup, InlineKeyboardButton
-from bot.core.config import settings
+from bot.core.config import settings, VERSION
 
 router = Router(name="web_app")
 
@@ -25,7 +25,7 @@ async def play_handler(message: types.Message):
     ])
     
     await message.answer(
-        "💣 <b>Minesweeper Ready!</b>\n\nClick the button below to launch the game.",
+        f"💣 <b>Minesweeper Ready!</b> ({VERSION})\n\nClick the button below to launch the game.",
         reply_markup=keyboard,
         parse_mode="HTML"
     )

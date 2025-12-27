@@ -4,6 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from aiogram.types import Update
 from bot.core.loader import dp, bot
 from bot.core.config import settings
+from loguru import logger
 import logging
 import time
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST, Counter
@@ -155,6 +156,30 @@ async def game_result(result: GameResult):
                 # Check if user is blocked
                 if user.is_block:
                      return {"status": "error", "message": "User is blocked"}
+
+                # 4. Duplicate check (absolute 3s cooldown)
+                last_record_query = (
+                    select(GameRecordModel)
+                    .where(GameRecordModel.user_id == result.user_id)
+                    .order_by(GameRecordModel.created_at.desc())
+                    .limit(1)
+                )
+                last_record_result = await session.execute(last_record_query)
+                last_record = last_record_result.scalar_one_or_none()
+
+                if last_record:
+                    # Absolute cooldown: no two games can be saved within 3 seconds for the same user
+                    # This prevents double-clicks or rapid-fire submissions even if scores differ
+                    from datetime import datetime, timezone
+                    now = datetime.now(timezone.utc)
+                    
+                    # Ensure last_record.created_at is aware or compare naively
+                    last_created = last_record.created_at.replace(tzinfo=timezone.utc) if not last_record.created_at.tzinfo else last_record.created_at
+                    time_diff = (now - last_created).total_seconds()
+                    
+                    if time_diff < 3:
+                        logger.warning(f"Ignored rapid-fire game result for user {result.user_id} (diff: {time_diff:.2f}s)")
+                        return {"status": "ok", "message": "Cooldown active"}
 
                 # Update user stats
                 user.total_games += 1

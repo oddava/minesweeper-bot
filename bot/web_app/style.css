@@ -34,7 +34,7 @@ body {
     user-select: none;
     -webkit-user-select: none;
     /* iOS Safari */
-    overflow: hidden;
+    overflow-y: auto; overflow-x: hidden;
     /* Prevent pull-to-refresh on mobile */
 }
 
@@ -45,7 +45,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    gap: 20px; padding-bottom: 50px;
     overflow-x: auto;
 }
 
@@ -163,7 +163,7 @@ body {
     border: 1px solid #555;
     contain: strict;
     /* CSS containment for performance */
-    overflow: hidden;
+    overflow-y: auto; overflow-x: hidden;
 }
 
 .cell:active {
@@ -364,4 +364,15 @@ body {
     cursor: pointer;
     font-weight: bold;
     margin-top: 20px;
+}
+.version-footer {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    opacity: 0.8;
+    margin-top: 10px;
+    font-family: monospace;
+    user-select: none;
+    pointer-events: none;
+    text-align: center;
+    width: 100%;
 }

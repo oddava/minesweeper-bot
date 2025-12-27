@@ -12,6 +12,7 @@ BOT_DIR = Path(__file__).absolute().parent.parent
 LOCALES_DIR = f"{BOT_DIR}/locales"
 I18N_DOMAIN = "messages"
 DEFAULT_LOCALE = "en"
+VERSION = "v1.1.0"
 
 
 class EnvBaseSettings(BaseSettings):

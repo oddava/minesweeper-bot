@@ -39,6 +39,7 @@ let timerInterval;
 let firstClick = true;
 let isFlagMode = false;
 let userStats = null;
+let resultSent = false;
 
 // Fetch user stats on load
 async function fetchStats() {
@@ -103,6 +104,7 @@ function initGame() {
     timer = 0;
     gameOver = false;
     firstClick = true;
+    resultSent = false;
 
     updateMinesCounter();
     timerElement.innerText = "000";
@@ -278,6 +280,9 @@ function endGame(win) {
 }
 
 function sendGameResult(isWin, score) {
+    if (resultSent) return;
+    resultSent = true;
+
     const user = Telegram.initDataUnsafe?.user;
     if (!user) return;
 

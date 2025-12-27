@@ -5,7 +5,7 @@ from sqlalchemy import select, func
 from bot.database.database import sessionmaker
 from bot.database.models import UserModel, GameRecordModel
 from bot.filters.admin import IsSuperadmin, IsAdmin
-from bot.core.config import settings
+from bot.core.config import settings, VERSION
 
 router = Router(name="admin")
 
@@ -192,7 +192,7 @@ async def stats_handler(message: types.Message):
         )
     
     text = f"""
-<b>📊 Bot Statistics</b>
+<b>📊 Bot Statistics (Version: {VERSION})</b>
 
 👥 Total Users: <b>{users_count}</b>
 🎮 Total Games: <b>{games_count}</b>

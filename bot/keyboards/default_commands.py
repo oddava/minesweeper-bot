@@ -12,12 +12,16 @@ users_commands: dict[str, dict[str, str]] = {
         "profile": "📊 View your stats",
         "leaderboard": "🏆 Top players",
         "support": "🛠 Support",
+        "changelog": "🆕 What's New",
+        "version": "🤖 Version Info",
     },
     "ru": {
         "play": "🎮 Играть в Сапёр",
         "profile": "📊 Ваша статистика",
         "leaderboard": "🏆 Лучшие игроки",
         "support": "🛠 Поддержка",
+        "changelog": "🆕 Что нового",
+        "version": "🤖 Версия бота",
     },
 }
 

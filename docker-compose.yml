@@ -73,6 +73,8 @@ services:
       - PGDATA='/var/lib/postgresql/data/pgdata'
     networks:
       - app
+    ports:
+      - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
@@ -126,8 +128,8 @@ services:
     restart: always
     env_file:
       - .env
-    # ports:
-    #   - ${REDIS_PORT}:${REDIS_PORT}
+    ports:
+      - ${REDIS_PORT}:${REDIS_PORT}
     networks:
       - app
     volumes:

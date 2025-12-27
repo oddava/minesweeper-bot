@@ -1,10 +1,14 @@
-from __future__ import annotations
 import asyncio
 
-import sentry_sdk
-import uvloop
 from loguru import logger
-from sentry_sdk.integrations.loguru import LoggingLevels, LoguruIntegration
+
+try:
+    import sentry_sdk
+    from sentry_sdk.integrations.loguru import LoggingLevels, LoguruIntegration
+except ImportError:
+    sentry_sdk = None
+    LoguruIntegration = None
+    LoggingLevels = None
 
 from bot.core.config import settings
 from bot.core.loader import app, bot, dp
@@ -61,7 +65,7 @@ async def on_shutdown() -> None:
 
 
 async def main() -> None:
-    if settings.SENTRY_DSN:
+    if settings.SENTRY_DSN and sentry_sdk:
         sentry_loguru = LoguruIntegration(
             level=LoggingLevels.INFO.value,
             event_level=LoggingLevels.INFO.value,
@@ -73,6 +77,8 @@ async def main() -> None:
             profiles_sample_rate=1.0,
             integrations=[sentry_loguru],
         )
+    elif settings.SENTRY_DSN:
+        logger.warning("SENTRY_DSN is set but sentry-sdk is not installed. Sentry initialization skipped.")
 
     logger.add(
         "logs/telegram_bot.log",
