@@ -13,7 +13,6 @@ users_commands: dict[str, dict[str, str]] = {
         "leaderboard": "🏆 Top players",
         "support": "🛠 Support",
         "changelog": "🆕 What's New",
-        "version": "🤖 Version Info",
     },
     "ru": {
         "play": "🎮 Играть в Сапёр",
@@ -21,7 +20,6 @@ users_commands: dict[str, dict[str, str]] = {
         "leaderboard": "🏆 Лучшие игроки",
         "support": "🛠 Поддержка",
         "changelog": "🆕 Что нового",
-        "version": "🤖 Версия бота",
     },
 }
 

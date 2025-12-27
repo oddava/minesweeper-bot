@@ -5,26 +5,24 @@ from aiogram.utils.i18n import gettext as _
 
 router = Router(name="about")
 
-@router.message(Command("version"))
-async def version_handler(message: types.Message):
-    """Show current bot version."""
-    await message.answer(f"🤖 <b>Minesweeper Bot</b>\nVersion: <code>{VERSION}</code>", parse_mode="HTML")
-
 @router.message(Command("changelog"))
 async def changelog_handler(message: types.Message):
     """Show the latest changes."""
     text = _("""
 <b>🆕 What's New in {version}</b>
 
-✅ <b>Fixes</b>
-- Accurate statistics calculation.
-- Improved local development environment.
-- Hardened game counting & de-duplication.
+🎨 <b>Themes</b>
+- 5 themes: Classic, Neon, Ocean, Retro, New Year Eve 🎆
+- Settings persist across sessions
 
-🚀 <b>Features</b>
-- Professional versioning system.
-- This changelog command!
-- Version display in the WebApp.
+⚡ <b>Performance</b>
+- WebApp optimized and 4x lighter
+- Faster loading, smoother gameplay
+
+✨ <b>UI Improvements</b>
+- Renamed to "oddava's minesweeper"
+- Game stats on win/lose (time, clicks, flags)
+- Scrollable board for Expert mode
 
 <i>Type /support if you find any bugs!</i>
 """).format(version=VERSION)
