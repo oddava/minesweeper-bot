@@ -2,8 +2,8 @@
     email {$CADDY_EMAIL}
 }
 
-minesweeper-bot.duckdns.org {
-    reverse_proxy tgbot-bot:8080
+{$DOMAIN} {
+    reverse_proxy {$COMPOSE_PROJECT_NAME}-bot:8080
 
     log {
         output file /var/log/caddy/access.log
@@ -11,8 +11,8 @@ minesweeper-bot.duckdns.org {
     }
 }
 
-grafana.minesweeper-bot.duckdns.org {
-    reverse_proxy tgbot-grafana:3000
+grafana.{$DOMAIN} {
+    reverse_proxy {$COMPOSE_PROJECT_NAME}-grafana:3000
 
     log {
         output file /var/log/caddy/access.log
